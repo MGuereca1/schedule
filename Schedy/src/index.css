@@ -1,16 +1,6 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --calendar-cell-size:80px;
+  
 }
 
 header {
@@ -28,39 +18,316 @@ header button {
 }
 
 .tab-container {
+  display: flex;
+  gap: 16px;
   overflow: auto;
 }
 
 .tab-button {
   border: none;
-  box-shadow: none;
+  box-shadow: white;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  margin-right: 30px;
+  margin-bottom: 40px;
 }
 
+.tab-button:hover{
+  background-color: #535bf2;
+}
 
 .weekdays-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
 }
 
 .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  justify-content: center;
 }
 
+
 .calendar-day {
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
+  aspect-ratio: 1;
+  width: var(--calendar-cell-size); /* Use the CSS variable */
+  height: var(--calendar-cell-size); /* Ensure consistent sizing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  background-color: #91da8c;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-sizing: border-box; /* Include padding/border in size calculations */
+  position: relative; /* For positioning event dots */
+}
+
+/* Event preview dots instead of full content */
+.event-preview {
+  display: none; /* Hide the full event preview content */
+}
+
+
+/* Event dots styling */
+.event-dots {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ff4444;
+  border: 1px solid white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.more-events-indicator {
+  font-size: 10px;
+  color: #666;
+  font-weight: bold;
+  margin-left: 1px;
+}
+
+/* Remove old event preview styles that were causing overflow */
+.events-preview {
+  display: none;
+}
+
+.calendar-day.empty {
+  background-color: transparent;
+  border: none;
+  cursor: default;
+}
+
+.calendar-day:hover{
+  background-color: rgb(178, 172, 226);
+  transform: scale(1.05);
+}
+
+.calendar-day:hover:not(.empty) {
+  background-color: rgb(178, 172, 226);
+  transform: scale(1.05);
+}
+.calendar-container{
+  width: auto;
+  max-width: auto;
+  height: auto;
+  background: rgb(119, 109, 179);
+  border-radius: 12px;
+  box-shadow: 0 2px 2px rgb(255, 255, 255);
+  padding: 24px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.calendar-header, .next-month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+    background-color: var(--background-primary);
+  color: var(--color-primary);
+  border-radius: 8px;
+  border: 1px solid var(--background-primary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-header:hover, .next-month:hover {
+  background-color:var(--background-primary);
+}
+
+.calendar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Make sure these don't have position: fixed or position: absolute */
+.day-schedule-container {
+  position: relative; /* or static */
+  width: 100%;
+  max-height: none; /* don't restrict height */
+  overflow: visible; /* allow scrolling */
+}
+
+.day-schedule {
+  position: relative;
+  padding: 1rem;
+  max-width: 100%;
+  overflow-y: auto; /* allow vertical scrolling */
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background-primary);
+  z-index: 1000;
+  overflow-y: auto; /* Allow scrolling within modal */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  margin: 0 auto;
+  background: var(--background-primary);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px; /* You can adjust — 500px works well */
+  padding: 1rem; /* Add some padding inside */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between inputs */
+}
+
+
+.modal-container{
+  text-align: justify;
+  position: absolute top;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-body {
+  padding: 1rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.time-slots-container {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+}
+
+.time-slot {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    background:var(--background-primary);
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: 500;
-    color: #2d3748;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.time-slot:hover {
+    background-color: var(--background-primary)
+}
+
+.time-slot.selected {
+    background-color: #007AFF;
+    color: white;
+    border-color: #007AFF;
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  background-color: lightgray;
+}
+
+.event-details {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.event-title {
+  color: #000;
+  margin: 0 0 4px 0;
+  font-size: 23px;
+  font-style: italic;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.event-description {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: lowercase;
+  color: #060606;
+}
+
+.event-time {
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
+  font-weight: 500;
+  color: #ff0000;
+ 
+}
+
+.multi-day-indicator {
+  color: #e40e0e;
+  font-size: 12px;
 }
 
 a {
@@ -80,22 +347,39 @@ body {
   min-height: 100vh;
 }
 
+main{
+  margin-top: 50px;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
 
-button {
+h2{
+  margin-bottom: 10px;
+}
+
+button, .back-btn, .open-modal-btn{
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 0.5em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  margin-bottom: 5px;
 }
+
+.back-btn{
+  font-size: 0.9em;
+  padding: 0.5em 1em;
+  margin-right: 150px;
+  
+}
+
 button:hover {
   border-color: #646cff;
 }
@@ -115,4 +399,6 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+
+  
 }

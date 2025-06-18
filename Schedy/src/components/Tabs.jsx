@@ -1,8 +1,7 @@
 export default function Tabs (props){
+    const { todos, selectedTab, setSelectedTab } = props
     // create differen tabs
     const tabs = ['Todo','Week', 'Month', 'Completed']
-
-    const { todos, selectedTab, setSelectedTab } = props
 
     return(
         <nav className="tabs-container">

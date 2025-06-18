@@ -4,7 +4,7 @@ export default function Layout (props){
 
     const header = (
         <header>
-            <div>
+            <div >
                 <h1 className="text-gradient">Schedy</h1>
                 <p>your schedule made easy</p>
             </div>

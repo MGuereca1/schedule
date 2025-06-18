@@ -51,7 +51,7 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background-primary: #05070f;
+        --background-primary: #191d2c;
         --background-secondary: #0e101e;
         --background-tertiary: #121424;
         --background-accent: '';
@@ -105,11 +105,21 @@
     font-family: "Eczar", serif;
 }
 
-body {
+body, #root{
     background: var(--background-primary);
     color: var(--color-primary);
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     line-height: 1.6rem;
+    
+}
+
+#root{
+    /* max-width: 1200px; */
+    width: 100vh;
+    margin: 0 auto;
+    padding: 20px;
+    height: 100vh;
+    text-align: center;
 }
 
 /* Special */
@@ -135,8 +145,8 @@ button {
 }
 
 h1 {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
 }
 
 h2 {
