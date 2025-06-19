@@ -47,6 +47,9 @@
     --highlight-border-radius: 0.5rem;
 
     --text-selection: '';
+
+    /* for clock color  */
+        --clock-color:light
 }
 
 @media (prefers-color-scheme: dark) {
@@ -95,6 +98,9 @@
         --highlight-border-radius: 0.5rem;
 
         --text-selection: '';
+
+        /* for clock color  */
+        --clock-color:dark
     }
 }
 
@@ -112,6 +118,7 @@ body, #root{
     line-height: 1.6rem;
     
 }
+
 
 #root{
     /* max-width: 1200px; */

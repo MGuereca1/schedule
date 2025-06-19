@@ -17,37 +17,22 @@ header button {
   gap: 1rem;
 }
 
-.tab-container {
-  display: flex;
-  gap: 16px;
-  overflow: auto;
-}
-
-.tab-button {
-  border: none;
-  box-shadow: white;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  margin-right: 30px;
-  margin-bottom: 40px;
-}
-
-.tab-button:hover{
-  background-color: #535bf2;
-}
-
 .weekdays-header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(7, var(--calendar-cell-size));
+  gap: 5px; /* Match the calendar-grid gap */
   margin-bottom: 10px;
   font-weight: bold;
   text-align: center;
+  justify-content: center;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, var(--calendar-cell-size));
   gap: 5px;
   justify-content: center;
 }
@@ -57,7 +42,7 @@ header button {
   aspect-ratio: 1;
   width: var(--calendar-cell-size); /* Use the CSS variable */
   height: var(--calendar-cell-size); /* Ensure consistent sizing */
-  display: flex;
+  display: grid;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -67,9 +52,37 @@ header button {
   color: var(--color-primary);
   font-size: 1.2rem;
   background-color: #91da8c;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: var(--background-primary) 0.2s ease, transform 0.2s ease;
   box-sizing: border-box; /* Include padding/border in size calculations */
   position: relative; /* For positioning event dots */
+}
+
+
+.calendar-day.empty {
+  background-color: transparent;
+  border: none;
+  cursor: default;
+}
+
+.calendar-day:hover{
+  background-color: rgb(178, 172, 226);
+  transform: scale(1.05);
+}
+
+.calendar-day:hover:not(.empty) {
+  background-color: rgb(178, 172, 226);
+  transform: scale(1.05);
+}
+.calendar-container{
+  width: auto;
+  max-width: auto;
+  height: auto;
+  background: rgb(119, 109, 179);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
 }
 
 /* Event preview dots instead of full content */
@@ -110,33 +123,6 @@ header button {
   display: none;
 }
 
-.calendar-day.empty {
-  background-color: transparent;
-  border: none;
-  cursor: default;
-}
-
-.calendar-day:hover{
-  background-color: rgb(178, 172, 226);
-  transform: scale(1.05);
-}
-
-.calendar-day:hover:not(.empty) {
-  background-color: rgb(178, 172, 226);
-  transform: scale(1.05);
-}
-.calendar-container{
-  width: auto;
-  max-width: auto;
-  height: auto;
-  background: rgb(119, 109, 179);
-  border-radius: 12px;
-  box-shadow: 0 2px 2px rgb(255, 255, 255);
-  padding: 24px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-
-}
 
 .nav-buttons {
   display: flex;
@@ -257,29 +243,13 @@ header button {
 }
 
 .time-slots {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
 }
 
-.time-slot {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    background:var(--background-primary);
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 0.875rem;
-}
-
-.time-slot:hover {
-    background-color: var(--background-primary)
-}
-
-.time-slot.selected {
-    background-color: #007AFF;
-    color: white;
-    border-color: #007AFF;
+#start-time, #end-time{
+  color-scheme: var(--clock-color);
 }
 
 .event-item {
@@ -360,7 +330,7 @@ h2{
   margin-bottom: 10px;
 }
 
-button, .back-btn, .open-modal-btn{
+button, .back-btn, .open-modal-btn, .authen-close-btn{
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.5em 1.2em;

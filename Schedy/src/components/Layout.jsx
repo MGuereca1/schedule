@@ -1,6 +1,11 @@
+import { useState } from "react"
+import Modal from "./Modal"
+import Authentication from "./authentication"
+
 export default function Layout (props){
     const {children} = props
 
+    const [showModal, setShowModal] = useState(false)
 
     const header = (
         <header>
@@ -9,7 +14,7 @@ export default function Layout (props){
                 <p>your schedule made easy</p>
             </div>
 
-            <button>
+            <button onClick={()=>{setShowModal(true)}}>
                 <p>Sign up</p>
                 
             </button>
@@ -23,8 +28,19 @@ export default function Layout (props){
         </footer>
     )
 
+    function handleCloseModal(){
+        setShowModal(false)
+    }
+
     return(
         <>
+        {/* only show modal if true */}
+            { showModal &&(
+                <Modal handleCloseModal = {handleCloseModal}>
+                <Authentication handleCloseModal = {handleCloseModal}/>
+            </Modal>
+            )}
+
             {header}
             <main>
                 {children}

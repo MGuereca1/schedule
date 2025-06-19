@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
+
 import ReactDom from 'react-dom'
+
 // use modal to make schedule form
 export default function Modal (props){
-    const {children, handleCloseModal, title} = props
+    const {children, handleCloseModal} = props
 
-    //Close modal on esc
+    // //Close modal on esc
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape') {
@@ -16,6 +18,8 @@ export default function Modal (props){
         return () => document.removeEventListener('keydown', handleEscape)
     }, [handleCloseModal])
 
+
+
     // prevent body scroll when modal is open
     useEffect(()=>{
         document.body.style.overflow = 'hidden'
@@ -24,19 +28,19 @@ export default function Modal (props){
         }  
     }, [])
 
-    const handleBackdropClick = (e) => {
-        if (e.target === e.currentTarget){
-            handleCloseModal()
-        }
-    }
+    // const handleBackdropClick = (e) => {
+    //     if (e.target === e.currentTarget){
+    //         handleCloseModal()
+    //     }
+    // }
 
-    return(
-        <div className='modal-overlay' onClick={handleBackdropClick}>
+    return ReactDom.createPortal(
+        <div className='modal-overlay' >
 
-            <div className='modal-content'>
+            <div className='modal-content' onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
-
-        </div>
+        </div>, 
+        document.getElementById('portal')
     )
 }
