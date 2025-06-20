@@ -7,7 +7,8 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
   const [eventDescription, setEventDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeError, setTimeError] = useState('');
-  const [isNextDay, setIsNextDay] = useState(false); // New state for next day toggle
+  const [submitError, setSubmitError] = useState(''); // Add error state
+  const [isNextDay, setIsNextDay] = useState(false);
 
   // Convert 24-hour time to 12-hour format for display
   const formatTimeFor12Hour = (time24) => {
@@ -52,18 +53,21 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
     setStartTime(time);
     const error = validateTimes(time, endTime, isNextDay);
     setTimeError(error);
+    setSubmitError(''); // Clear submit error when user makes changes
   };
 
   const handleEndTimeChange = (time) => {
     setEndTime(time);
     const error = validateTimes(startTime, time, isNextDay);
     setTimeError(error);
+    setSubmitError(''); // Clear submit error when user makes changes
   };
 
   const handleNextDayToggle = (checked) => {
     setIsNextDay(checked);
     const error = validateTimes(startTime, endTime, checked);
     setTimeError(error);
+    setSubmitError(''); // Clear submit error when user makes changes
   };
 
   const formatDuration = () => {
@@ -103,6 +107,7 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
     
     if (!startTime || !endTime || !eventTitle.trim()) {
       console.log('Missing required fields');
+      setSubmitError('Please fill in all required fields');
       return;
     }
     
@@ -114,6 +119,7 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
     }
 
     setIsSubmitting(true);
+    setSubmitError('');
 
     try {
       // Calculate end date (could be next day)
@@ -123,35 +129,54 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
         endDate.setDate(endDate.getDate() + 1);
       }
 
+      // FIXED: Remove the temporary ID - let Firestore generate it
       const eventData = {
-        id: Date.now(),
         title: eventTitle.trim(),
         description: eventDescription.trim(),
         date: selectedDate.toISOString().split('T')[0],
         startTime: startTime,
         endTime: endTime,
-        endDate: endDate.toISOString().split('T')[0], // Add end date
+        endDate: endDate.toISOString().split('T')[0],
         isMultiDay: isNextDay,
+        // Keep legacy 'time' field for backward compatibility
         time: formatTimeFor12Hour(startTime)
       };
       
       console.log('Submitting event data:', eventData);
       await onSubmit(eventData);
+      
+      // Reset form after successful submission
+      setEventTitle('');
+      setEventDescription('');
+      setStartTime('');
+      setEndTime('');
+      setIsNextDay(false);
+      setTimeError('');
+      
     } catch (error) {
       console.error('Error submitting event:', error);
+      setSubmitError('Failed to save event. Please try again.');
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="event-form">
+      {submitError && (
+        <div className="error-message">{submitError}</div>
+      )}
+
       <div className="form-group">
         <label htmlFor="event-title">Event Title *</label>
         <input
           id="event-title"
           type="text"
           value={eventTitle}
-          onChange={(e) => setEventTitle(e.target.value)}
+          onChange={(e) => {
+            setEventTitle(e.target.value);
+            setSubmitError('');
+          }}
           placeholder="What's the event about?"
           className="form-input"
           maxLength={100}
@@ -165,7 +190,10 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
         <textarea
           id="event-description"
           value={eventDescription}
-          onChange={(e) => setEventDescription(e.target.value)}
+          onChange={(e) => {
+            setEventDescription(e.target.value);
+            setSubmitError('');
+          }}
           placeholder="Add more details (optional)"
           className="form-textarea"
           rows="3"
@@ -237,7 +265,7 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
         <button 
           type="button"
           onClick={onCancel}
-          className="btn btn-secondary"
+          className="btn-secondary"
           disabled={isSubmitting}
         >
           Cancel
@@ -246,7 +274,7 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
         <button 
           type="submit"
           disabled={!startTime || !endTime || !eventTitle.trim() || isSubmitting || !!timeError}
-          className="btn btn-primary"
+          className="btn-primary"
         >
           {isSubmitting ? (
             <>

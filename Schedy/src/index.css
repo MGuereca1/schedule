@@ -252,6 +252,7 @@ header button {
   color-scheme: var(--clock-color);
 }
 
+/* Main event container */
 .event-item {
   display: flex;
   justify-content: space-between;
@@ -262,11 +263,45 @@ header button {
   border: 1px solid #000000;
   border-radius: 8px;
   background-color: lightgray;
+  position: relative; /* Add this for absolute positioning */
+  min-height: 60px; /* Ensure enough space for actions */
 }
 
-.event-details {
+/* Event content section (title and description) - LEFT SIDE */
+.event-content {
   flex: 1;
   margin-right: 16px;
+  order: 1;
+}
+
+/* Time badge styling - TOP RIGHT */
+.event-time-badge {
+  font-weight: bold;
+  font-size: 15px;
+  flex-shrink: 0;
+  color: #ff0000;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: right;
+  order: 2;
+  margin-left: auto;
+  margin-bottom: 20px;
+  gap: 0;
+}
+
+/* Actions styling - BOTTOM RIGHT (absolute positioning) */
+.event-action {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-weight: bold;
+  font-size: 13px;
+  color: #ff0000;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
 }
 
 .event-title {
@@ -286,14 +321,27 @@ header button {
   color: #060606;
 }
 
-.event-time {
-  font-weight: bold;
-  font-size: 18px;
-  flex-shrink: 0;
+/* Individual time elements within the badge */
+.start-time {
   font-weight: 500;
-  color: #ff0000;
- 
 }
+
+.end-time {
+  font-weight: 500;
+  margin-top: 0; /* Remove top margin for single line */
+  margin-left: 0; /* No left margin needed */
+}
+
+.multi-day-badge {
+  font-size: 12px;
+  background-color: #ff0000;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px; /* Space from the time */
+  font-weight: bold;
+}
+
 
 .multi-day-indicator {
   color: #e40e0e;
@@ -330,7 +378,7 @@ h2{
   margin-bottom: 10px;
 }
 
-button, .back-btn, .open-modal-btn, .authen-close-btn{
+button, .back-btn, .open-modal-btn, .authen-close-btn, .Edit-btn,.delete-btn {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.5em 1.2em;
@@ -348,6 +396,27 @@ button, .back-btn, .open-modal-btn, .authen-close-btn{
   padding: 0.5em 1em;
   margin-right: 150px;
   
+}
+
+.Edit-btn,.delete-btn{
+  margin-top: 20px;
+  font-size: 0.9em;
+  padding: 0.5em 1em;
+}
+
+.form-group{
+  margin-bottom: 20px;
+}
+.form-actions{
+  margin-top: 20px;
+}
+.btn-secondary{
+  margin-right: 50px;
+}
+
+.login-close-btn{
+  text-align: center;
+  margin-left: 120px;
 }
 
 button:hover {

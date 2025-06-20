@@ -69,7 +69,6 @@ export default function Authentication (props){
     // TODO: CREATE POP MESSAGE WITH ERRORS, MAKE A SEE PASSWORD OPTION, 
     // FIXME: EVENTS ARE NOT STORED IN DB AND NEED TO MAKE THE BUTTON SAY LOGOUT INSTEAD OF SIGNUP 
     // VIDEO: 7:20
-    // when typing to confirm password bug occurs in which it delets the letter inputted into password bar
     // email: testemail@gmail.com Forgotten456
 
     return (

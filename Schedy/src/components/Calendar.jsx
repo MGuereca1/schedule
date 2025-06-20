@@ -1,19 +1,111 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DaySchedule from './DaySchedule';
 import Modal from './Modal';
 import TimeSelectionModal from './TimeSelectionModal';
+
+// ADD AUTH AND DB TO ADJUST HOW EVENTS ARE STORED IN THE APP
+import { auth, db } from '../../firebase'; // Add db import
+import { useAuth } from '../context/AuthContext';
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore'; // Add missing imports
 
 export default function Calendar (){
     // create own calendar for more flexibility when it comes to adding certain functionalities
     
     const [currDate, setCurrDate] = useState(new Date())
 
+    // get current user
+    const {globalUser} = useAuth()
+
     // usestate to be selectthe date and create events for later
     const [selectedDate, setSelectedDate] = useState(null)
-    const [events, setEvents] = useState([]) //array to store events
+    const [events, setEvents] = useState([]) //array to store events and sync with firestone
 
     //modal state
     const [showTimeModal, setShowTimeModal] = useState(false)
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false) // Add login prompt state
+    const [loading, setLoading] = useState(false)
+
+    // add a loading useEffect
+    useEffect(() => {
+        //  if user is found load their evente else clear the events
+        if (globalUser) {
+            loadEvents()
+        } else{
+            setEvents([])
+        }
+    }, [globalUser]) // Add dependency array
+
+    // function to load events
+    async function loadEvents() {
+        if(!globalUser){
+            return
+        }
+
+        try{
+            setLoading(true)
+
+            const q = query(collection(db, 'events'),
+                where('userId', '==', globalUser.uid)
+            )
+
+            const querySnapshot = await getDocs(q)
+            const loadedEvents = []
+
+            querySnapshot.forEach((doc)=>{
+                loadedEvents.push({
+                    id: doc.id,
+                    ...doc.data()
+                })
+            })
+            
+            setEvents(loadedEvents) // Fix typo: was loadEvents, should be loadedEvents
+            console.log('Loaded events from firestone', loadedEvents)
+        
+        } catch (err){
+            console.log('Error loading events: ', err)
+
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    // save event to firestone
+    const handleAddEvent = async (eventData) =>{
+        if (!globalUser){
+            console.error('No user logged in')
+            return
+        }
+
+        try {
+            // add userId and the timestamps to the event data
+            const firestoreEventData = {
+                ...eventData,
+                userId: globalUser.uid,
+                createdAt: new Date(),
+                updatedAt: new Date() // Fix typo: was upDatedAt
+            }
+
+            // save to db
+            const docRef = await addDoc(collection(db,'events'), firestoreEventData)
+
+            // update local state with new event
+            const newEvent = {
+                id: docRef.id,
+                ...firestoreEventData
+            }
+
+            setEvents(prevEvents => [...prevEvents, newEvent])
+
+            setShowTimeModal(false)
+            console.log("event saved to Firestore with ID: ", docRef.id)
+
+        } catch (err) {
+            console.log("Error saving event with Firestore: ", err)
+            alert('Failed to save event. Try again')
+        }
+    }
+
+    
 
     // handler for when day is clicked
     const handleDateClick = (day) => {
@@ -21,20 +113,24 @@ export default function Calendar (){
         console.log(`selected date: ${day}`)
     }
 
-    // handler for add event modal
+    // handler for add event modal - CHECK LOGIN HERE
     const handleOpenAddEventModal = () =>{
+        if (!globalUser) {
+            // Show login prompt instead of opening event modal
+            setShowLoginPrompt(true)
+            return
+        }
         setShowTimeModal(true)
     } 
-
-    const handleAddEvent = (eventData) =>{
-        setEvents(prevEvents => [...prevEvents, eventData])
-        setShowTimeModal(false)
-        console.log('Event added', eventData)
-    }
 
     // close modal handler
     const handleCloseModal = () =>{
         setShowTimeModal(false)
+    }
+
+    // close login prompt handler
+    const handleCloseLoginPrompt = () => {
+        setShowLoginPrompt(false)
     }
 
     // close modal handler (go back to calendar view)
@@ -139,7 +235,16 @@ export default function Calendar (){
         return days
     }
 
-return (
+    // show loading state
+    if(loading){
+        return (
+            <div className='calendar-container loading'>
+                <p>Loading your events...</p>
+            </div>
+        )
+    }
+
+    return (
         <div className='calendar-container'>
             {/* Show calendar view when no date is selected */}
             {!selectedDate && (
@@ -184,6 +289,21 @@ return (
                     onAddEvent={handleOpenAddEventModal}
                     onClose={handleCloseDaySchedule}
                 />
+            )}
+
+            {/* Login Prompt Modal - Only shows when logged out user tries to add event */}
+            {showLoginPrompt && (
+                <Modal 
+                    handleCloseModal={handleCloseLoginPrompt}
+                    title="Login Required"
+                >
+                    <div >
+                        <p>Please log in to create and manage events.</p>
+                        <button className='login-close-btn' onClick={handleCloseLoginPrompt}>
+                            <p>Close</p>
+                        </button>
+                    </div>
+                </Modal>
             )}
 
             {/* Time Selection Modal */}

@@ -4,42 +4,9 @@ export default function DaySchedule(props) {
     // Destructurize for parameter - added onClose, renamed onAddEvent to onOpenModal
     const { date, events, onAddEvent: onOpenModal, onClose } = props
 
-    const [newEvent, setNewEvent] = useState('')
-    const [newEventTime, setNewEventTime] = useState('')
-
     // Add debug logging
     console.log('DaySchedule received events:', events);
     console.log('DaySchedule selected date:', date);
-
-    // Function handle event
-    async function handleSubmit(e) {
-        e.preventDefault()
-
-        if (!newEvent.trim() || !newEventTime) {
-            return
-        }
-
-        try {
-            const eventData = {
-                id: Date.now(),
-                title: newEvent,
-                date: date,
-                time: newEventTime
-            }
-
-            // For now, just add to local state - the modal will handle real event adding
-            console.log('Event would be added:', eventData)
-
-            // Clear event - fixed the bug (was clearing newEvent twice)
-            setNewEvent('')
-            setNewEventTime('')
-
-            console.log('Event added successfully')
-            
-        } catch (error) {
-            console.error('Error submitting event:', error)
-        }
-    }
 
     // FIXED: Filter events of the selected date using same format as Calendar
     const dayEvents = events.filter(event => {
@@ -63,61 +30,93 @@ export default function DaySchedule(props) {
 
     // Sort events by time - fixed typo (localCompare -> localeCompare)
     const sortedEvents = dayEvents.sort((a, b) => {
-        return a.startTime.localeCompare(b.startTime) // Use startTime instead of time
+        // Ensure both events have startTime before comparing
+        if (!a.startTime || !b.startTime) {
+            return 0; // Keep original order if times are missing
+        }
+        return a.startTime.localeCompare(b.startTime);
     })
 
     console.log('Sorted events:', sortedEvents);
 
-    // MODIFY SO EVENT TIME IS SEEN AND MAKE DAY EVENT QUICKER  
+    // Format date for better display
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })
+    }
+
+    //  create editing event
+    // create ability to delete event
+
     return (
         <div className="day-schedule-container">
             <div className="day-schedule">
                 {/* Back button and Add Event modal trigger */}
                 <div className="day-schedule-header">
-                    <h2>Schedule for {date.toDateString()}</h2>
-                    <button onClick={onClose} className="back-btn">
-                        <i className="fa-solid fa-left-long"></i>
-                        <p>Back to Calendar</p>
-                    </button>
-                
-                    <button onClick={onOpenModal} className="open-modal-btn">
-                        <i className="fa-solid fa-plus"></i>
-                        <p>Add event</p>
-                    </button>
+                    <h2>Schedule for {formatDate(date)}</h2>
+                    <div className="header-actions">
+                        <button onClick={onClose} className="back-btn">
+                            <i className="fa-solid fa-left-long"></i>
+                            <span> Back to Calendar</span>
+                        </button>
+                    
+                        <button onClick={onOpenModal} className="open-modal-btn">
+                            <i className="fa-solid fa-plus"></i>
+                            <span> Add Event</span>
+                        </button>
+                    </div>
                 </div>
 
-                {/* ADDED: Display the events */}
+                {/* Display the events */}
                 <div className="events-list">
                     {sortedEvents.length === 0 ? (
                         <div className="no-events">
-                            <p>No events scheduled for this day</p>
-                            <p>Click "Add event" to create one!</p>
+                            <div className="no-events-icon">
+                                <i className="fa-regular fa-calendar-xmark"></i>
+                            </div>
+                            <h3>No events scheduled</h3>
+                            <p>Click "Add Event" to create your first event for this day!</p>
                         </div>
                     ) : (
-                        sortedEvents.map(event => (
-                            <div key={event.id} className="event-item">
-                                <div className="event-details">
-                                    <h3 className="event-title">{event.title}</h3>
-                                    {event.description && (
-                                        <p className="event-description">{event.description}</p>
-                                    )}
-                                </div>
-                                <div className="event-time">
-                                    <span className="start-time">{formatTimeFor12Hour(event.startTime)}</span>
-                                    {event.endTime && (
-                                        <span className="end-time"> - {formatTimeFor12Hour(event.endTime)}</span>
-                                    )}
-                                    {event.isMultiDay && (
-                                        <span className="multi-day-indicator"> (next day)</span>
-                                    )}
-                                </div>
+                        <>
+                            <div className="events-count">
+                                {sortedEvents.length} event{sortedEvents.length !== 1 ? 's' : ''} scheduled
                             </div>
-                        ))
+                            {sortedEvents.map(event => (
+                                <div key={event.id} className="event-item">
+                                    
+                                    <div className="event-time-badge">
+                                        <span className="start-time">{formatTimeFor12Hour(event.startTime)}</span>
+                                        {event.endTime && (
+                                            <span className="end-time">-{formatTimeFor12Hour(event.endTime)}</span>
+                                        )}
+                                        {event.isMultiDay && (
+                                            <span className="multi-day-badge">Next Day</span>
+                                        )}
+                                    </div>
+
+                                    <div className="event-content">
+                                        <h3 className="event-title">{event.title}</h3>
+                                        {event.description && (
+                                            <p className="event-description">{event.description}</p>
+                                        )}
+                                    </div>
+
+                                    {/* add edit and delete button */}
+                                    <div key={event.id} className="event-action">
+                                        <button className="Edit-btn" onClick={() => {EditEvent()}}>Edit</button>
+                                        <button className="delete-btn" onClick={() => {DeleteEvent()}}>Delete</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </>
                     )}
                 </div>
             </div>
         </div>
     )
-    
 }
-
