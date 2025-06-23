@@ -1,6 +1,18 @@
 :root {
-  --calendar-cell-size:80px;
-  
+  --calendar-cell-size: 80px;
+}
+
+/* mobile preference */
+@media (max-width: 768px) {
+  :root {
+    --calendar-cell-size: 45px; 
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --calendar-cell-size: 40px; 
+  }
 }
 
 header {
@@ -8,7 +20,8 @@ header {
   align-items: center;
   gap: 1rem;
   justify-content: space-between;
-
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  padding: 0 10px;
 }
 
 header button {
@@ -20,7 +33,7 @@ header button {
 .weekdays-header {
   display: grid;
   grid-template-columns: repeat(7, var(--calendar-cell-size));
-  gap: 5px; /* Match the calendar-grid gap */
+  gap: 5px;
   margin-bottom: 10px;
   font-weight: bold;
   text-align: center;
@@ -28,6 +41,14 @@ header button {
   max-width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 10px;
+}
+
+@media (max-width: 480px) {
+  .weekdays-header {
+    gap: 2px;
+    font-size: 0.8rem;
+  }
 }
 
 .calendar-grid {
@@ -35,13 +56,19 @@ header button {
   grid-template-columns: repeat(7, var(--calendar-cell-size));
   gap: 5px;
   justify-content: center;
+  padding: 0 10px;
 }
 
+@media (max-width: 480px) {
+  .calendar-grid {
+    gap: 2px;
+  }
+}
 
 .calendar-day {
   aspect-ratio: 1;
-  width: var(--calendar-cell-size); /* Use the CSS variable */
-  height: var(--calendar-cell-size); /* Ensure consistent sizing */
+  width: var(--calendar-cell-size);
+  height: var(--calendar-cell-size);
   display: grid;
   flex-direction: column;
   align-items: center;
@@ -53,10 +80,23 @@ header button {
   font-size: 1.2rem;
   background-color: #91da8c;
   transition: var(--background-primary) 0.2s ease, transform 0.2s ease;
-  box-sizing: border-box; /* Include padding/border in size calculations */
-  position: relative; /* For positioning event dots */
+  box-sizing: border-box;
+  position: relative;
 }
 
+@media (max-width: 768px) {
+  .calendar-day {
+    font-size: 1rem;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-day {
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+}
 
 .calendar-day.empty {
   background-color: transparent;
@@ -64,34 +104,62 @@ header button {
   cursor: default;
 }
 
-.calendar-day:hover{
+.calendar-day:hover {
   background-color: rgb(178, 172, 226);
   transform: scale(1.05);
+}
+
+/* Reduce hover effect */
+@media (max-width: 768px) {
+  .calendar-day:hover {
+    transform: scale(1.02);
+  }
 }
 
 .calendar-day:hover:not(.empty) {
   background-color: rgb(178, 172, 226);
   transform: scale(1.05);
 }
-.calendar-container{
+
+@media (max-width: 768px) {
+  .calendar-day:hover:not(.empty) {
+    transform: scale(1.02);
+  }
+}
+
+.calendar-container {
   width: auto;
-  max-width: auto;
+  max-width: 100%;
   height: auto;
   background: rgb(119, 109, 179);
   border-radius: 12px;
   padding: 24px;
   margin-top: 20px;
   margin-bottom: 20px;
-
+  overflow-x: auto; /* Allow horizontal scroll if needed */
 }
 
-/* Event preview dots instead of full content */
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 16px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-container {
+    padding: 12px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
+
 .event-preview {
-  display: none; /* Hide the full event preview content */
+  display: none;
 }
 
-
-/* Event dots styling */
 .event-dots {
   position: absolute;
   bottom: 3px;
@@ -111,6 +179,18 @@ header button {
   box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
+@media (max-width: 480px) {
+  .event-dot {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .event-dots {
+    bottom: 2px;
+    gap: 1px;
+  }
+}
+
 .more-events-indicator {
   font-size: 10px;
   color: #666;
@@ -118,11 +198,15 @@ header button {
   margin-left: 1px;
 }
 
-/* Remove old event preview styles that were causing overflow */
+@media (max-width: 480px) {
+  .more-events-indicator {
+    font-size: 8px;
+  }
+}
+
 .events-preview {
   display: none;
 }
-
 
 .nav-buttons {
   display: flex;
@@ -130,6 +214,14 @@ header button {
   justify-content: center;
   gap: 16px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .nav-buttons {
+    gap: 12px;
+    margin-bottom: 15px;
+  }
 }
 
 .calendar-header, .next-month {
@@ -137,7 +229,7 @@ header button {
   flex-direction: column;
   align-items: center;
   padding: 8px 12px;
-    background-color: var(--background-primary);
+  background-color: var(--background-primary);
   color: var(--color-primary);
   border-radius: 8px;
   border: 1px solid var(--background-primary);
@@ -145,8 +237,15 @@ header button {
   transition: background-color 0.2s ease;
 }
 
+@media (max-width: 480px) {
+  .calendar-header, .next-month {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+}
+
 .calendar-header:hover, .next-month:hover {
-  background-color:var(--background-primary);
+  background-color: var(--background-primary);
 }
 
 .calendar-title {
@@ -157,20 +256,44 @@ header button {
   margin-left: auto;
 }
 
-/* Make sure these don't have position: fixed or position: absolute */
+@media (max-width: 768px) {
+  .calendar-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-title {
+    font-size: 1.1rem;
+  }
+}
+
 .day-schedule-container {
-  position: relative; /* or static */
+  position: relative;
   width: 100%;
-  max-height: none; /* don't restrict height */
-  overflow: visible; /* allow scrolling */
+  max-height: none;
+  overflow: visible;
 }
 
 .day-schedule {
   position: relative;
   padding: 1rem;
   max-width: 100%;
-  overflow-y: auto; /* allow vertical scrolling */
+  overflow-y: auto;
 }
+
+@media (max-width: 768px) {
+  .day-schedule {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .day-schedule {
+    padding: 0.5rem;
+  }
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -179,27 +302,52 @@ header button {
   bottom: 0;
   background-color: var(--background-primary);
   z-index: 1000;
-  overflow-y: auto; /* Allow scrolling within modal */
+  overflow-y: auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px; /* Add padding for mobile */
 }
+
 .modal-content {
   margin: 0 auto;
   background: var(--background-primary);
   border-radius: 8px;
   width: 100%;
-  max-width: 500px; /* You can adjust — 500px works well */
-  padding: 1rem; /* Add some padding inside */
+  max-width: 500px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Space between inputs */
+  gap: 10px;
+  max-height: 90vh; 
+  overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 10px;
+  }
+  
+  .modal-content {
+    max-width: 100%;
+    border-radius: 6px;
+    padding: 0.75rem;
+  }
 }
 
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 5px;
+  }
+  
+  .modal-content {
+    padding: 0.5rem;
+  }
+}
 
-.modal-container{
+.modal-container {
   text-align: justify;
-  position: absolute top;
+  position: absolute;
+  top: 0;
 }
 
 .modal-header {
@@ -210,10 +358,24 @@ header button {
   border-bottom: 1px solid #eee;
 }
 
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 0.75rem;
+  }
+}
+
 .modal-body {
   padding: 1rem;
   max-height: 70vh;
   overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .modal-body {
+    padding: 0.75rem;
+    max-height: 60vh;
+  }
 }
 
 .modal-close {
@@ -227,6 +389,8 @@ header button {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
 }
 
 .modal-close:hover {
@@ -248,11 +412,17 @@ header button {
   gap: 0.5rem;
 }
 
-#start-time, #end-time{
+@media (max-width: 480px) {
+  .time-slots {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.25rem;
+  }
+}
+
+#start-time, #end-time {
   color-scheme: var(--clock-color);
 }
 
-/* Main event container */
 .event-item {
   display: flex;
   justify-content: space-between;
@@ -263,18 +433,41 @@ header button {
   border: 1px solid #000000;
   border-radius: 8px;
   background-color: lightgray;
-  position: relative; /* Add this for absolute positioning */
-  min-height: 60px; /* Ensure enough space for actions */
+  position: relative;
+  min-height: 60px;
 }
 
-/* Event content section (title and description) - LEFT SIDE */
+@media (max-width: 768px) {
+  .event-item {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-item {
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+}
+
 .event-content {
   flex: 1;
   margin-right: 16px;
   order: 1;
 }
 
-/* Time badge styling - TOP RIGHT */
+@media (max-width: 768px) {
+  .event-content {
+    margin-right: 0;
+    margin-bottom: 8px;
+    order: 1;
+  }
+}
+
 .event-time-badge {
   font-weight: bold;
   font-size: 15px;
@@ -290,10 +483,26 @@ header button {
   gap: 0;
 }
 
-/* Actions styling - BOTTOM RIGHT (absolute positioning) */
+@media (max-width: 768px) {
+  .event-time-badge {
+    position: static;
+    margin-left: 0;
+    margin-bottom: 8px;
+    text-align: left;
+    order: 2;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-time-badge {
+    font-size: 13px;
+  }
+}
+
 .event-action {
   position: absolute;
-  bottom: 8px;
+  bottom: 1px;
   right: 12px;
   font-weight: bold;
   font-size: 13px;
@@ -302,6 +511,15 @@ header button {
   flex-direction: row;
   align-items: center;
   gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .event-action {
+    position: static;
+    margin-top: 8px;
+    order: 3;
+    font-size: 12px;
+  }
 }
 
 .event-title {
@@ -313,6 +531,18 @@ header button {
   text-transform: uppercase;
 }
 
+@media (max-width: 768px) {
+  .event-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-title {
+    font-size: 18px;
+  }
+}
+
 .event-description {
   margin: 0;
   font-size: 15px;
@@ -321,31 +551,49 @@ header button {
   color: #060606;
 }
 
-/* Individual time elements within the badge */
+@media (max-width: 480px) {
+  .event-description {
+    font-size: 14px;
+  }
+}
+
 .start-time {
   font-weight: 500;
 }
 
 .end-time {
   font-weight: 500;
-  margin-top: 0; /* Remove top margin for single line */
-  margin-left: 0; /* No left margin needed */
+  margin-top: 0;
+  margin-left: 0;
 }
 
 .multi-day-badge {
   font-size: 12px;
   background-color: #ff0000;
-  color: white;
+  color: var(--color-primary);
   padding: 2px 6px;
   border-radius: 4px;
-  margin-left: 8px; /* Space from the time */
+  margin-left: 8px;
   font-weight: bold;
 }
 
+@media (max-width: 480px) {
+  .multi-day-badge {
+    font-size: 10px;
+    padding: 1px 4px;
+    margin-left: 6px;
+  }
+}
 
 .multi-day-indicator {
   color: #e40e0e;
   font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  .multi-day-indicator {
+    font-size: 10px;
+  }
 }
 
 a {
@@ -353,6 +601,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -365,8 +614,20 @@ body {
   min-height: 100vh;
 }
 
-main{
+main {
   margin-top: 50px;
+}
+
+@media (max-width: 768px) {
+  main {
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    margin-top: 20px;
+  }
 }
 
 h1 {
@@ -374,11 +635,23 @@ h1 {
   line-height: 1.1;
 }
 
-h2{
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5em;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2em;
+  }
+}
+
+h2 {
   margin-bottom: 10px;
 }
 
-button, .back-btn, .open-modal-btn, .authen-close-btn, .edit-btn,.delete-btn {
+button, .back-btn, .open-modal-btn, .authen-close-btn, .edit-btn, .delete-btn {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.5em 1.2em;
@@ -389,40 +662,122 @@ button, .back-btn, .open-modal-btn, .authen-close-btn, .edit-btn,.delete-btn {
   cursor: pointer;
   transition: border-color 0.25s;
   margin-bottom: 5px;
+  min-height: 44px; 
 }
 
-.back-btn{
+@media (max-width: 768px) {
+  button, .back-btn, .open-modal-btn, .authen-close-btn, .edit-btn, .delete-btn, .btn-secondary, .btn-primary {
+    padding: 0.6em 1em;
+    font-size: 0.95em;
+  }
+}
+
+@media (max-width: 480px) {
+  button, .back-btn, .open-modal-btn, .authen-close-btn, .edit-btn, .delete-btn, .btn-secondary, .btn-primary {
+    padding: 0.7em 0.9em;
+    font-size: 0.9em;
+    width: 100%; 
+    margin-bottom: 8px;
+  }
+}
+
+.back-btn {
   font-size: 0.9em;
   padding: 0.5em 1em;
   margin-right: 150px;
-  
 }
 
-.edit-btn,.delete-btn{
-  margin-top: 20px;
+@media (max-width: 768px) {
+  .back-btn {
+    margin-right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-btn {
+    margin-right: 0;
+    width: auto;
+  }
+}
+
+.edit-btn, .delete-btn {
   font-size: 0.9em;
-  padding: 0.5em 1em;
+  padding: 0.5em 1.0em;
 }
 
-.form-group{
+@media (max-width: 480px) {
+  .edit-btn, .delete-btn {
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+
+.form-group {
   margin-bottom: 20px;
 }
-.form-actions{
+
+@media (max-width: 480px) {
+  .form-group {
+    margin-bottom: 15px;
+  }
+}
+
+.form-actions {
   margin-top: 20px;
 }
-.btn-secondary{
+
+@media (max-width: 480px) {
+  .form-actions {
+    margin-top: 15px;
+  }
+  
+  .form-actions button {
+    margin-bottom: 8px;
+  }
+}
+
+.btn-secondary {
   margin-right: 50px;
 }
 
-.login-close-btn{
+@media (max-width: 480px) {
+  .btn-secondary {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+}
+
+.login-close-btn {
   text-align: center;
   margin-left: 120px;
+}
+
+@media (max-width: 480px) {
+  .login-close-btn {
+    margin-left: 0;
+  }
 }
 
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: var(--background-primary);
+  }
+  
+  a:hover {
+    color: #747bff;
+  }
+  
+  button {
+    background-color: var(--background-primary);
+  }
 }

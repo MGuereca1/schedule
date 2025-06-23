@@ -31,7 +31,7 @@ export default function Layout (props){
     const footer = (
         <footer>
             <p><span className="text-gradient">Schedy </span>
-            was made by <a>Me</a></p>
+            was made by <a target="_blank">Michelle Guereca Rochell.</a> See the project on <a target="_blank" href="https://github.com/MGuereca1">Github</a>!</p>
         </footer>
     )
 

@@ -264,8 +264,10 @@ export default function EventForm({ selectedDate, onSubmit, onCancel, editingEve
       </div>
 
       <div className="form-group">
-        <label className="checkbox-label">
+        {/* htmlFor and is was added so checkbox for nextday has an appropraite id attribute */}
+        <label htmlFor="next-day-checkbox" className="checkbox-label">
           <input
+            id="next-day-checkbox"
             type="checkbox"
             checked={isNextDay}
             onChange={(e) => handleNextDayToggle(e.target.checked)}

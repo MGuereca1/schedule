@@ -117,12 +117,10 @@ export default function DaySchedule(props) {
                                     <div className="event-action">
                                         <button className="edit-btn" onClick={() => handleEditEvent(event)} title="edit event">
                                             <i className="fa-solid fa-file-pen"></i>
-                                            <span>Edit</span>
                                         </button>
                                         
                                         <button className="delete-btn" onClick={() => handleDeleteEvent(event.id)} title="delete event">
                                             <i className="fa-solid fa-trash"></i>
-                                            <span>Delete</span>
                                         </button>
                                     </div>
                                 </div>

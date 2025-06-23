@@ -23,19 +23,19 @@ export default function Authentication (props){
         }
 
         if(!password || password.length < 8){
-            setError("please use a valid email address")
+            setError("password must be at least 8 characters long") // Fixed error message
             return
         }
 
         // make sure passwords match if signing up
         if(isRegistered){
             if(password !== confirmPassword){
-                setError("passwords fo not match")
+                setError("passwords do not match") // Fixed typo
                 return
             }
         }
    
-    setIsAuthenticating(true)
+        setIsAuthenticating(true)
 
         try {
             // authenticating logic here
@@ -50,7 +50,13 @@ export default function Authentication (props){
 
         } catch (err) {
             console.log(err.message)
-            setError(err.message)
+            
+            // Handle specific login error or use custom message for login failures
+            if (!isRegistered && (err.message.includes('invalid') || err.message.includes('wrong') || err.message.includes('incorrect') || err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password')) {
+                setError("Email or password do not match. Please try again")
+            } else {
+                setError(err.message)
+            }
         } finally{
             setIsAuthenticating(false)
         }
@@ -67,9 +73,6 @@ export default function Authentication (props){
     }
     
     // TODO: CREATE POP MESSAGE WITH ERRORS, MAKE A SEE PASSWORD OPTION, 
-    // FIXME: EVENTS ARE NOT STORED IN DB AND NEED TO MAKE THE BUTTON SAY LOGOUT INSTEAD OF SIGNUP 
-    // VIDEO: 7:20
-    // email: testemail@gmail.com Forgotten456
 
     return (
         <>
@@ -115,4 +118,4 @@ export default function Authentication (props){
             </div>
         </>
     )
-}   
+}
