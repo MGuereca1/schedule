@@ -1,14 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function EventForm({ selectedDate, onSubmit, onCancel }) {
+export default function EventForm({ selectedDate, onSubmit, onCancel, editingEvent }) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeError, setTimeError] = useState('');
-  const [submitError, setSubmitError] = useState(''); // Add error state
+  const [submitError, setSubmitError] = useState('');
   const [isNextDay, setIsNextDay] = useState(false);
+
+  // Populate form when editing an existing event
+  useEffect(() => {
+    if (editingEvent) {
+      setEventTitle(editingEvent.title || '');
+      setEventDescription(editingEvent.description || '');
+      setStartTime(editingEvent.startTime || '');
+      setEndTime(editingEvent.endTime || '');
+      setIsNextDay(editingEvent.isMultiDay || false);
+    } else {
+      // Reset form for new event
+      setEventTitle('');
+      setEventDescription('');
+      setStartTime('');
+      setEndTime('');
+      setIsNextDay(false);
+    }
+    setTimeError('');
+    setSubmitError('');
+  }, [editingEvent]);
 
   // Convert 24-hour time to 12-hour format for display
   const formatTimeFor12Hour = (time24) => {
@@ -53,21 +73,21 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
     setStartTime(time);
     const error = validateTimes(time, endTime, isNextDay);
     setTimeError(error);
-    setSubmitError(''); // Clear submit error when user makes changes
+    setSubmitError('');
   };
 
   const handleEndTimeChange = (time) => {
     setEndTime(time);
     const error = validateTimes(startTime, time, isNextDay);
     setTimeError(error);
-    setSubmitError(''); // Clear submit error when user makes changes
+    setSubmitError('');
   };
 
   const handleNextDayToggle = (checked) => {
     setIsNextDay(checked);
     const error = validateTimes(startTime, endTime, checked);
     setTimeError(error);
-    setSubmitError(''); // Clear submit error when user makes changes
+    setSubmitError('');
   };
 
   const formatDuration = () => {
@@ -102,7 +122,8 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
       endTime,
       eventTitle: eventTitle.trim(),
       isNextDay,
-      timeError
+      timeError,
+      isEditing: !!editingEvent
     });
     
     if (!startTime || !endTime || !eventTitle.trim()) {
@@ -129,7 +150,6 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
         endDate.setDate(endDate.getDate() + 1);
       }
 
-      // FIXED: Remove the temporary ID - let Firestore generate it
       const eventData = {
         title: eventTitle.trim(),
         description: eventDescription.trim(),
@@ -143,7 +163,14 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
       };
       
       console.log('Submitting event data:', eventData);
-      await onSubmit(eventData);
+      
+      if (editingEvent) {
+        // Call onSubmit with eventId and updated data for editing
+        await onSubmit(editingEvent.id, eventData);
+      } else {
+        // Call onSubmit with just event data for adding
+        await onSubmit(eventData);
+      }
       
       // Reset form after successful submission
       setEventTitle('');
@@ -155,7 +182,7 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
       
     } catch (error) {
       console.error('Error submitting event:', error);
-      setSubmitError('Failed to save event. Please try again.');
+      setSubmitError(editingEvent ? 'Failed to update event. Please try again.' : 'Failed to save event. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -279,10 +306,10 @@ export default function EventForm({ selectedDate, onSubmit, onCancel }) {
           {isSubmitting ? (
             <>
               <div className="spinner"></div>
-              Adding...
+              {editingEvent ? 'Updating...' : 'Adding...'}
             </>
           ) : (
-            'Add Event'
+            editingEvent ? 'Update Event' : 'Add Event'
           )}
         </button>
       </div>

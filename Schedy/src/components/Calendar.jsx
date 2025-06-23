@@ -6,7 +6,7 @@ import TimeSelectionModal from './TimeSelectionModal';
 // ADD AUTH AND DB TO ADJUST HOW EVENTS ARE STORED IN THE APP
 import { auth, db } from '../../firebase'; // Add db import
 import { useAuth } from '../context/AuthContext';
-import { collection, getDocs, addDoc, query, where } from 'firebase/firestore'; // Add missing imports
+import { collection, getDocs, addDoc, query, where, updateDoc, deleteDoc, doc } from 'firebase/firestore'; // Add missing imports
 
 export default function Calendar (){
     // create own calendar for more flexibility when it comes to adding certain functionalities
@@ -24,6 +24,9 @@ export default function Calendar (){
     const [showTimeModal, setShowTimeModal] = useState(false)
     const [showLoginPrompt, setShowLoginPrompt] = useState(false) // Add login prompt state
     const [loading, setLoading] = useState(false)
+
+    // edit state - FIXED: renamed from isEditing to editingEvent
+    const [editingEvent, setEditingEvent] = useState(null)
 
     // add a loading useEffect
     useEffect(() => {
@@ -97,6 +100,7 @@ export default function Calendar (){
             setEvents(prevEvents => [...prevEvents, newEvent])
 
             setShowTimeModal(false)
+            setEditingEvent(null) // Clear editing state
             console.log("event saved to Firestore with ID: ", docRef.id)
 
         } catch (err) {
@@ -104,8 +108,70 @@ export default function Calendar (){
             alert('Failed to save event. Try again')
         }
     }
-
     
+    // function to update event - FIXED: Multiple typos and logic errors
+    const handleUpdateEvent = async (eventId, updatedData) => {
+        if (!globalUser){
+            console.log("no user logged in")
+            return
+        }
+
+        try {
+            // update time stamp - FIXED: typos in property names
+            const updateEventData = {
+                ...updatedData,
+                updatedAt: new Date() // FIXED: was updatedData: new Data()
+            }
+
+            // update in firestone - FIXED: import and use doc function
+            const eventRef = doc(db, 'events', eventId)
+            await updateDoc(eventRef, updateEventData)
+
+            // update local state
+            setEvents(prevEvents => prevEvents.map(event => 
+                event.id === eventId ? {...event, ...updateEventData} : event
+            ))
+
+            setShowTimeModal(false)
+            setEditingEvent(null) // FIXED: was setIsEditing(null)
+            console.log("Event updated in firestone with ID: ", eventId)
+        } catch (err) {
+            console.log("Error updating events in Firestone", err)
+            alert('Failed to update event. Try again')
+        }
+    }
+
+    // function to delete event - FIXED: Logic error in filter
+    const handleDeleteEvent = async (eventId) => {
+        if (!globalUser){
+            console.log("no user logged in")
+            return
+        }
+
+        // ask for confirmation
+        const confirmed = window.confirm('Are you sure you want to delete this event?')
+        if(!confirmed) {return}
+
+        try {
+            // delete in firestone
+            await deleteDoc(doc(db, 'events', eventId))
+
+            // update local state - FIXED: filter logic was wrong
+            setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId))
+
+            console.log("Event deleted from Firestone with ID:", eventId)
+
+        } catch (err) {
+            console.log("Error deleting events in Firestone:", err)
+            alert('Failed to delete event. Try again')
+        }
+    }
+
+    // handler to edit - FIXED: renamed from handleEditEvent
+    const handleEditEvent = (event) =>{
+        setEditingEvent(event)
+        setShowTimeModal(true)
+    }
 
     // handler for when day is clicked
     const handleDateClick = (day) => {
@@ -120,12 +186,14 @@ export default function Calendar (){
             setShowLoginPrompt(true)
             return
         }
+        setEditingEvent(null) // Clear any editing state when adding new event
         setShowTimeModal(true)
     } 
 
     // close modal handler
     const handleCloseModal = () =>{
         setShowTimeModal(false)
+        setEditingEvent(null) // Clear editing state when closing
     }
 
     // close login prompt handler
@@ -288,6 +356,8 @@ export default function Calendar (){
                     events={events}
                     onAddEvent={handleOpenAddEventModal}
                     onClose={handleCloseDaySchedule}
+                    onEditEvent={handleEditEvent}
+                    onDeleteEvent={handleDeleteEvent}
                 />
             )}
 
@@ -310,12 +380,13 @@ export default function Calendar (){
             {showTimeModal && selectedDate && (
                 <Modal 
                     handleCloseModal={handleCloseModal}
-                    title="Schedule New Event"
+                    title={editingEvent ? "Edit Event" : "Schedule New Event"}
                 >
                     <TimeSelectionModal
                         selectedDate={selectedDate}
-                        onAddEvent={handleAddEvent}
+                        onAddEvent={editingEvent ? handleUpdateEvent : handleAddEvent}
                         onClose={handleCloseModal}
+                        editingEvent={editingEvent}
                     />
                 </Modal>
             )}

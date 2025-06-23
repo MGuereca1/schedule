@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function DaySchedule(props) {
     // Destructurize for parameter - added onClose, renamed onAddEvent to onOpenModal
-    const { date, events, onAddEvent: onOpenModal, onClose } = props
+    const { date, events, onAddEvent: onOpenModal, onClose, onEditEvent, onDeleteEvent } = props
 
     // Add debug logging
     console.log('DaySchedule received events:', events);
@@ -50,7 +50,14 @@ export default function DaySchedule(props) {
     }
 
     //  create editing event
-    // create ability to delete event
+    const handleEditEvent = (event) => {
+        onEditEvent(event)
+    }
+
+    // create ability to delete event - FIXED: Use event.id instead of event.Id
+    const handleDeleteEvent = (eventId) => {
+        onDeleteEvent(eventId)
+    }
 
     return (
         <div className="day-schedule-container">
@@ -106,10 +113,17 @@ export default function DaySchedule(props) {
                                         )}
                                     </div>
 
-                                    {/* add edit and delete button */}
-                                    <div key={event.id} className="event-action">
-                                        <button className="Edit-btn" onClick={() => {EditEvent()}}>Edit</button>
-                                        <button className="delete-btn" onClick={() => {DeleteEvent()}}>Delete</button>
+                                    {/* add edit and delete button - FIXED: Use event.id instead of event.Id */}
+                                    <div className="event-action">
+                                        <button className="edit-btn" onClick={() => handleEditEvent(event)} title="edit event">
+                                            <i className="fa-solid fa-file-pen"></i>
+                                            <span>Edit</span>
+                                        </button>
+                                        
+                                        <button className="delete-btn" onClick={() => handleDeleteEvent(event.id)} title="delete event">
+                                            <i className="fa-solid fa-trash"></i>
+                                            <span>Delete</span>
+                                        </button>
                                     </div>
                                 </div>
                             ))}

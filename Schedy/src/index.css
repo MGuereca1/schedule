@@ -279,7 +279,7 @@ header button {
   font-weight: bold;
   font-size: 15px;
   flex-shrink: 0;
-  color: #ff0000;
+  color: var(--time-color);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -378,14 +378,14 @@ h2{
   margin-bottom: 10px;
 }
 
-button, .back-btn, .open-modal-btn, .authen-close-btn, .Edit-btn,.delete-btn {
+button, .back-btn, .open-modal-btn, .authen-close-btn, .edit-btn,.delete-btn {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.5em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--background-primary);
   cursor: pointer;
   transition: border-color 0.25s;
   margin-bottom: 5px;
@@ -398,7 +398,7 @@ button, .back-btn, .open-modal-btn, .authen-close-btn, .Edit-btn,.delete-btn {
   
 }
 
-.Edit-btn,.delete-btn{
+.edit-btn,.delete-btn{
   margin-top: 20px;
   font-size: 0.9em;
   padding: 0.5em 1em;
@@ -425,19 +425,4 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-
-  
 }

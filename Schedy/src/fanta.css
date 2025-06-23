@@ -48,8 +48,9 @@
 
     --text-selection: '';
 
-    /* for clock color  */
-        --clock-color:light
+    /* for clock color and time */
+    --clock-color:light
+    --time-color:black
 }
 
 @media (prefers-color-scheme: dark) {
@@ -101,6 +102,7 @@
 
         /* for clock color  */
         --clock-color:dark
+        --time-color:#ff0000
     }
 }
 

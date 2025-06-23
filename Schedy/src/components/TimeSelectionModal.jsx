@@ -1,6 +1,6 @@
 import EventForm from './EventForm';
 
-export default function TimeSelectionModal({ selectedDate, onAddEvent, onClose }) {
+export default function TimeSelectionModal({ selectedDate, onAddEvent, editingEvent, onClose }) {
   const formatDate = (date) => {
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
@@ -10,10 +10,14 @@ export default function TimeSelectionModal({ selectedDate, onAddEvent, onClose }
     });
   };
 
-  const handleFormSubmit = async (eventData) => {
-    await onAddEvent(eventData);
-    onClose();
-  };
+  const handleFormSubmit = async (eventId, eventData = null) => {
+    if (editingEvent && eventData){
+      await onAddEvent(eventId, eventData)
+    }else{
+      await onAddEvent(eventId)
+    }
+    onClose()
+  }
 
   return (
     <>
@@ -22,12 +26,17 @@ export default function TimeSelectionModal({ selectedDate, onAddEvent, onClose }
           <i className="fa-solid fa-calendar"></i>
         </div>
         <span>{formatDate(selectedDate)}</span>
+        <div className='editing-indicator'>
+          <i className="fa-solid fa-pen-nib"></i>
+          <span> Editing event</span>
+        </div>
       </div>
 
       <EventForm
         selectedDate={selectedDate}
         onSubmit={handleFormSubmit}
         onCancel={onClose}
+        editingEvent={editingEvent}
       />
     </>
   );
